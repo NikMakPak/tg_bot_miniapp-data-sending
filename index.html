@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    window.Telegram.WebApp.ready();
+    function sendForm() {
+      const name = document.getElementById('name').value;
+      const age  = document.getElementById('age').value;
+      const payload = JSON.stringify({ name, age });
+      window.Telegram.WebApp.sendData(payload);
+    }
+  </script>
+  <title>TGMINIAPPTEST Анкета</title>
+</head>
+<body>
+  <h3>Заполните анкету</h3>
+  <label>Имя:   <input id="name" type="text" /></label><br/>
+  <label>Возраст:<input id="age"  type="number"/></label><br/>
+  <button onclick="sendForm()">Сохранить</button>
+</body>
+</html>
