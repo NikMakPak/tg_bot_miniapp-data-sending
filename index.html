@@ -1,23 +1,137 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    window.Telegram.WebApp.ready();
-    function sendForm() {
-      const name = document.getElementById('name').value;
-      const age  = document.getElementById('age').value;
-      const payload = JSON.stringify({ name, age });
-      window.Telegram.WebApp.sendData(payload);
-    }
-  </script>
-  <title>TGMINIAPPTEST Анкета</title>
-</head>
-<body>
-  <h3>Заполните анкету</h3>
-  <label>Имя:   <input id="name" type="text" /></label><br/>
-  <label>Возраст:<input id="age"  type="number"/></label><br/>
-  <button onclick="sendForm()">Сохранить</button>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Форма заявки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+        color: var(--tg-theme-text-color, #222);
+        background-color: var(--tg-theme-bg-color, #f5f5f5);
+      }
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        background-color: var(--tg-theme-secondary-bg-color, #fff);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: var(--tg-theme-text-color, #333);
+        margin-bottom: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        background-color: var(--tg-theme-bg-color, #fff);
+        color: var(--tg-theme-text-color, #333);
+      }
+      button {
+        background-color: var(--tg-theme-button-color, #2196f3);
+        color: var(--tg-theme-button-text-color, #fff);
+        border: none;
+        padding: 12px 20px;
+        width: 100%;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+      .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Форма заявки</h1>
+      <form id="applicationForm">
+        <div class="form-group">
+          <label for="name">Имя:</label>
+          <input type="text" id="name" name="name" required />
+          <div class="error" id="nameError">Пожалуйста, введите ваше имя</div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+          <div class="error" id="emailError">
+            Пожалуйста, введите корректный email
+          </div>
+        </div>
+        <button type="submit" id="submitBtn">Отправить</button>
+      </form>
+    </div>
+
+    <script>
+      // Инициализация Telegram WebApp
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+
+      // Получаем форму и элементы
+      const form = document.getElementById("applicationForm");
+      const nameInput = document.getElementById("name");
+      const emailInput = document.getElementById("email");
+      const nameError = document.getElementById("nameError");
+      const emailError = document.getElementById("emailError");
+
+      // Обработчик отправки формы
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Сбрасываем ошибки
+        nameError.style.display = "none";
+        emailError.style.display = "none";
+
+        // Валидация
+        let isValid = true;
+
+        if (!nameInput.value.trim()) {
+          nameError.style.display = "block";
+          isValid = false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput.value.trim())) {
+          emailError.style.display = "block";
+          isValid = false;
+        }
+
+        if (isValid) {
+          // Отправляем данные в Telegram бот
+          const data = {
+            name: nameInput.value.trim(),
+            email: emailInput.value.trim(),
+            date: new Date().toISOString(),
+          };
+
+          tg.sendData(JSON.stringify(data));
+          tg.close();
+        }
+      });
+    </script>
+  </body>
 </html>
