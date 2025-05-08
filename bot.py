@@ -1,41 +1,42 @@
 """
-Telegram bot with mini-app integration.
+Telegram bot with mini-app integration using pyTelegramBotAPI (TeleBot).
 """
 
 import logging
 import json
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from config import BOT_TOKEN, WEBAPP_URL
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize bot and dispatcher
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher(bot)
+# Initialize bot
+bot = telebot.TeleBot(BOT_TOKEN)
 
 # Handler for /start command
-@dp.message_handler(commands=['start'])
-async def send_welcome(message: types.Message):
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
     """
     This handler will be called when user sends `/start` command
     """
     # Create a keyboard with a button that opens the mini-app
+    markup = InlineKeyboardMarkup()
     webapp_button = InlineKeyboardButton(
         text="Заполнить форму",
         web_app=WebAppInfo(url=WEBAPP_URL)
     )
-    keyboard = InlineKeyboardMarkup().add(webapp_button)
+    markup.add(webapp_button)
 
-    await message.answer(
+    bot.send_message(
+        message.chat.id,
         "Привет! Я бот для сбора данных. Нажмите на кнопку ниже, чтобы открыть форму:",
-        reply_markup=keyboard
+        reply_markup=markup
     )
 
 # Handler for web app data
-@dp.message_handler(content_types=types.ContentTypes.WEB_APP_DATA)
-async def web_app_handler(message: types.Message):
+@bot.message_handler(content_types=['web_app_data'])
+def web_app_handler(message):
     """
     This handler will be called when user sends data from the web app
     """
@@ -46,12 +47,13 @@ async def web_app_handler(message: types.Message):
     logging.info(f"Received data: {data}")
 
     # Send confirmation message
-    await message.answer("Спасибо, ваша заявка принята!")
+    bot.send_message(message.chat.id, "Спасибо, ваша заявка принята!")
 
     # You can also send a detailed confirmation with the submitted data
     details = "\n".join([f"{key}: {value}" for key, value in data.items()])
-    await message.answer(f"Полученные данные:\n{details}")
+    bot.send_message(message.chat.id, f"Полученные данные:\n{details}")
 
 # Main entry point
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    logging.info("Starting bot...")
+    bot.infinity_polling()

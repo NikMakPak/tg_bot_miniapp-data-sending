@@ -4,8 +4,8 @@ This project implements a Telegram bot with a mini-app integration for collectin
 
 ## Features
 
-- Telegram bot built with aiogram
-- Mini-app with a form for data collection
+- Telegram bot built with pyTelegramBotAPI (TeleBot)
+- Mini-app with a form for data collection using HTML validation
 - Data submission from the mini-app to the bot
 - Confirmation message after form submission
 
@@ -41,7 +41,7 @@ The mini-app needs to be hosted on a web server. You can use GitHub Pages, Netli
 ### 4. Install Dependencies
 
 ```bash
-pip install aiogram
+pip install pyTelegramBotAPI
 ```
 
 ### 5. Run the Bot
@@ -60,12 +60,10 @@ python bot.py
 
 ## Project Structure
 
-- `bot.py` - Main bot file with aiogram
+- `bot.py` - Main bot file with pyTelegramBotAPI
 - `config.py` - Configuration file for bot token and mini-app URL
 - `webapp/` - Directory containing the mini-app files
-  - `index.html` - HTML form
-  - `style.css` - Styling for the form
-  - `script.js` - JavaScript for form handling and Telegram WebApp integration
+  - `index.html` - HTML form with inline CSS and JavaScript
 
 ## Notes
 
